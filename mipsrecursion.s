@@ -85,7 +85,7 @@ tabOrSpace: # skips character and goes to the next one
     j loop
 
 trailingChar:  #fucntion for checking if the rest of the code is all trailing tabs or spaces
-    addi $t3, $t3, 1 #move to the next byte
+    addi $t3, $t3, 1 #moves to next byte
     addi $s6, $s6, 1 # increments max number of characters
     lb $s4, 0($t3)  #gets a character of the string
     bgt $s6,$t0, invalidStatement #if max number of characters is greater than 100
