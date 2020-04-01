@@ -84,8 +84,8 @@ Skips: # skips character
 Trailing: # checks to see if the trailing characters are tabs or spaces and removes them
     addi $t3, $t3, 1
     addi $s6, $s6, 1
-    lb $s4, 0($t3)  # Gets the element
-    bgt $s6,$t0, Invalid #Moves to Invalid if the no. of char > 100
+    lb $s4, 0($t3)  # gets the element
+    bgt $s6,$t0, Invalid # moves to Invalid if the no. of char > 100
     beq $s4, $t2, valid
     bne $s4, $s4, Nonspace
     j Trailing
@@ -94,13 +94,13 @@ Nonspace:
     bne $s4, $t5, Invalid # if character after space for trailing is not a tab or space then print invalid
     j Trailing # returns to check the next character for trailing tab or space
 
-Invalid: # Prints invalid input
+Invalid: # prints invalid input
     li $v0, 4
     la $a0, invalidMessage # prints "Invalid Input"
     syscall
     
     li $v0, 10
-    syscall # Ends program
+    syscall # ends program
     
 Nondigit:
     blt $s4, $s0, Invalid
