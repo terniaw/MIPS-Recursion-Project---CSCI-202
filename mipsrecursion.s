@@ -23,7 +23,7 @@ main:
     la $a0, array # loads the array
     la $a1, myArray
     
-    jal validString # jumps to subprogram A
+    jal Valid_Str # jumps to subprogram A
     add $t1, $v0, $zero
     li $v0, 1
     move $a0, $t1
@@ -31,7 +31,7 @@ main:
     li $v0, 10
     syscall # tell the system to end the program
     
-validString:
+Valid_Str:
     sw $ra, 0($sp)
     li $t1, 20
     li $t2, 10
@@ -52,17 +52,17 @@ validString:
     j loop
     
 loop:
-    bgt $s6,$t0, invalidStatement # If no. of chars > 100
-    bgt $t6,$t1, invalidStatement # If no. of chars > 100
+    bgt $s6,$t0, Invalid # If no. of chars > 100
+    bgt $t6,$t1, Invalid # If no. of chars > 100
     lb $s4, 0($t3)
-    beq $t6, $t7, leadChar
-    beq $s4, $t4, trailingChar
-    beq $s4, $t5, trailingChar
+    beq $t6, $t7, Leading
+    beq $s4, $t4, Trailing
+    beq $s4, $t5, Trailing
     beq $s4, $t2, valid
 
 check:
-    blt $s4, $t8, invalidStatement # If ASCII char is < 48
-    bgt $s4, $t9, notDigit # If ASCII char > 57
+    blt $s4, $t8, Invalid # If ASCII char is < 48
+    bgt $s4, $t9, Nondigit # If ASCII char > 57
     addi $s4, $s4, -48
     sb $s4, 0($s5)
     addi $s5, $s5, 1 # Increments the address of array
@@ -71,30 +71,30 @@ check:
     addi $s6, $s6, 1
     j loop
         
-leadChar: # Checks to see if the leading character is a tab or a space
-    beq $s4, $t4, tabOrSpace
-    beq $s4, $t5, tabOrSpace
+Leading: # Checks to see if the leading character is a tab or a space
+    beq $s4, $t4, Skips
+    beq $s4, $t5, Skips
     j check
 
-tabOrSpace: # Skips character
+Skips: # Skips character
     addi $t3, $t3, 1
     addi $s6, $s6, 1
     j loop
     
-trailingChar: # Checks to see if the trailing characters are tabs or spaces and removes them
+Trailing: # Checks to see if the trailing characters are tabs or spaces and removes them
     addi $t3, $t3, 1
     addi $s6, $s6, 1
     lb $s4, 0($t3)  # Gets the element
-    bgt $s6,$t0, invalidStatement #Moves to invalidStatement if the no. of char > 100
+    bgt $s6,$t0, Invalid #Moves to Invalid if the no. of char > 100
     beq $s4, $t2, valid
-    bne $s4, $s4, notSpace
-    j trailingChar
+    bne $s4, $s4, Nonspace
+    j Trailing
 
-notSpace:
-    bne $s4, $t5, invalidStatement # if character after space for trailing is not a tab or space then print invalid
-    j trailingChar # returns to check the next character for trailing tab or space
+Nonspace:
+    bne $s4, $t5, Invalid # if character after space for trailing is not a tab or space then print invalid
+    j Trailing # returns to check the next character for trailing tab or space
 
-invalidStatement: # Prints invalid input
+Invalid: # Prints invalid input
     li $v0, 4
     la $a0, invalidMessage # prints "Invalid Input"
     syscall
@@ -102,9 +102,9 @@ invalidStatement: # Prints invalid input
     li $v0, 10
     syscall # Ends the program
     
-    notDigit:
-    blt $s4, $s0, invalidStatement
-    bgt $s4, $s1, notCapital
+Nondigit:
+    blt $s4, $s0, Invalid
+    bgt $s4, $s1, Noncapital
     addi $s4, $s4, -55
     sb $s4, 0($s5)
     addi $s5, $s5, 1
@@ -113,9 +113,9 @@ invalidStatement: # Prints invalid input
     addi $s6, $s6, 1
     j loop
     
-    notCapital:
-    blt $s4, $s2, invalidStatement
-    bgt $s4, $s3, invalidStatement
+Noncapital:
+    blt $s4, $s2, Invalid
+    bgt $s4, $s3, Invalid
     addi $s4, $s4, -87
     sb $s4, 0($s5)
     addi $s5, $s5, 1
@@ -124,7 +124,7 @@ invalidStatement: # Prints invalid input
     addi $s6, $s6, 1
     j loop
     
-    valid:
+valid:
     sub $s5, $s5, $t6
     li $t0, 34
     li $t1, 100000
@@ -132,7 +132,7 @@ invalidStatement: # Prints invalid input
     add $t1, $zero, $zero
     li $t2, 1
     
-    recursion:
+recursion:
     beq $t6, $t2, baseCase
     lb $t4, 0($s5)
     add $t1, $t1, $t4
