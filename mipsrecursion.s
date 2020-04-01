@@ -18,3 +18,10 @@ main:
     li $v0, 8 # accepts user input
     la $a0, myArray
     li $a1, 100 # specifies the length that the user can input
+    syscall
+
+    lw $t0, myArray # load instruction that takes the word in $t0
+    sub $sp, $sp, 12 # moves pointer for stack
+    sw $t0, 4($sp) # adds the input string to the stack
+    la $a0, array # load instruction into the array
+    la $a1, myArray
