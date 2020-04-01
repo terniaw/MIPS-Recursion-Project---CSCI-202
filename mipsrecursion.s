@@ -37,23 +37,23 @@ validString:
     li $t2, 10
     add $t3, $a1, $zero
     li $t4, 32
-    li $t0, 100 #Max amount of characters
-    li $s6, 0 #counter to determine if max characters have been reached
-    li $t5, 9 #Tab ASCII code
-    li $t6, 0 #counter for valid characters
+    li $t0, 100 # Max amount of characters
+    li $s6, 0 # counter to determine if max characters have been reached
+    li $t5, 9 # Tab ASCII code
+    li $t6, 0 # counter for valid characters
     li $t7, 0
-    li $t8, 48 #Lowest character
-    li $t9, 57 #Highest possible no.
-    li $s0, 65 #Lowest capital letter
-    li $s1, 88 #Highest possible capital letter (X)
-    li $s2, 97 #Lowest possible lowercase letter
-    li $s3, 120 #Highest possible lowercase letter (x)
+    li $t8, 48 # Lowest character
+    li $t9, 57 # Highest possible no.
+    li $s0, 65 # Lowest capital letter
+    li $s1, 88 # Highest possible capital letter (X)
+    li $s2, 97 # Lowest possible lowercase letter
+    li $s3, 120 # Highest possible lowercase letter (x)
     add $s5, $a0, $zero
     j loop
     
 loop:
-    bgt $s6,$t0, invalidStatement #If no. of chars > 100
-    bgt $t6,$t1, invalidStatement #If no. of chars > 100
+    bgt $s6,$t0, invalidStatement # If no. of chars > 100
+    bgt $t6,$t1, invalidStatement # If no. of chars > 100
     lb $s4, 0($t3)
     beq $t6, $t7, leadChar
     beq $s4, $t4, trailingChar
@@ -61,46 +61,46 @@ loop:
     beq $s4, $t2, valid
 
 check:
-    blt $s4, $t8, invalidStatement #If ASCII char is < 48
-    bgt $s4, $t9, notDigit #If ASCII char > 57
+    blt $s4, $t8, invalidStatement # If ASCII char is < 48
+    bgt $s4, $t9, notDigit # If ASCII char > 57
     addi $s4, $s4, -48
     sb $s4, 0($s5)
-    addi $s5, $s5, 1 #Increments the address of array
+    addi $s5, $s5, 1 # Increments the address of array
     addi $t3, $t3, 1
     addi $t6, $t6, 1
     addi $s6, $s6, 1
     j loop
         
-leadChar: #Checks to see if the leading character is a tab or a space
+leadChar: # Checks to see if the leading character is a tab or a space
     beq $s4, $t4, tabOrSpace
     beq $s4, $t5, tabOrSpace
     j check
 
-tabOrSpace: #Skips character
+tabOrSpace: # Skips character
     addi $t3, $t3, 1
     addi $s6, $s6, 1
     j loop
     
-trailingChar: #Checks to see if the trailing characters are tabs or spaces and removes them
+trailingChar: # Checks to see if the trailing characters are tabs or spaces and removes them
     addi $t3, $t3, 1
     addi $s6, $s6, 1
-    lb $s4, 0($t3)  #Gets the element
+    lb $s4, 0($t3)  # Gets the element
     bgt $s6,$t0, invalidStatement #Moves to invalidStatement if the no. of char > 100
     beq $s4, $t2, valid
     bne $s4, $s4, notSpace
     j trailingChar
 
 notSpace:
-    bne $s4, $t5, invalidStatement #if character after space for trailing is not a tab or space then print invalid
-    j trailingChar #returns to check the next character for trailing tab or space
+    bne $s4, $t5, invalidStatement # if character after space for trailing is not a tab or space then print invalid
+    j trailingChar # returns to check the next character for trailing tab or space
 
-invalidStatement: #Prints invalid input
+invalidStatement: # Prints invalid input
     li $v0, 4
-    la $a0, invalidMessage #prints "Invalid Input"
+    la $a0, invalidMessage # prints "Invalid Input"
     syscall
     
     li $v0, 10
-    syscall #Ends the program
+    syscall # Ends the program
     
     notDigit:
     blt $s4, $s0, invalidStatement
