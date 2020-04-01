@@ -100,7 +100,7 @@ Invalid: # Prints invalid input
     syscall
     
     li $v0, 10
-    syscall # Ends the program
+    syscall # Ends program
     
 Nondigit:
     blt $s4, $s0, Invalid
@@ -142,7 +142,7 @@ recursion:
     addi $s5, $s5, 1
     j recursion
     
-    baseCase:
+baseCase:
     lb $t4, 0($s5)
     add $t1, $t1, $t4
     
