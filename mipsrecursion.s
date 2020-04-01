@@ -145,6 +145,5 @@ recursion:
 baseCase:
     lb $t4, 0($s5)
     add $t1, $t1, $t4
-    
     add $v0, $zero, $t1
     jr $ra
