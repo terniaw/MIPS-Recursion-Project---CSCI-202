@@ -117,9 +117,9 @@ notDigit:
     j loop
 
 notCapital:
-    blt $s4, $s2, invalidStatement # breaks if ascii of character is < 97
-    bgt $s4, $s3, invalidStatement # breaks if ascii of character is > 121
-    addi $s4, $s4, -87 # makes the ascii for digit align with common letters
+    blt $s4, $s2, invalidStatement # breaks if ASCII of character is < 97
+    bgt $s4, $s3, invalidStatement # breaks if ASCII of character is > 121
+    addi $s4, $s4, -87 # makes the ASCII for digit align with common letters
     sb $s4, 0($s5) # stores the character in a new string
     addi $s5, $s5, 1 # increments the address of the new array
     addi $t3, $t3, 1 # increments the address of the input string
@@ -134,4 +134,21 @@ valid:
     li $t5, 0 # the final recursive product sum hi
     add $t1, $zero, $zero
     li $t2, 1 # set equal to 1
+
+recursion:
+    beq $t6, $t2, baseCase # branch if only one character is left
+    lb $t4, 0($s5) # loads the address of the last character
+    add $t1, $t1, $t4 # adds it to the total
+    mult $t1, $t0 # multiplies the result by the base number
+    mflo $t1
+    addi $t6, $t6, -1
+    addi $s5, $s5, 1
+    j recursion
+
+baseCase:
+    lb $t4, 0($s5) # loads the address of the last character
+    add $t1, $t1, $t4 # adds to total
+
+    add $v0, $zero, $t1
+    jr $ra
 
