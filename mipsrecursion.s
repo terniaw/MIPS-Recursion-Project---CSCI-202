@@ -25,3 +25,11 @@ main:
     sw $t0, 4($sp) # adds the input string to the stack
     la $a0, array # load instruction into the array
     la $a1, myArray
+
+    jal validString # determines if the string is valid by jumping to subprogram
+    add $t1, $v0, $zero
+    li $v0, 1
+    move $a0, $t1
+    syscall # prints the equivalent result of the decimal base number 34
+    li $v0, 10
+    syscall
