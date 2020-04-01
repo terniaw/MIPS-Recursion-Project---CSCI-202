@@ -48,9 +48,9 @@ validString:
     li $t8, 48 # ASCII for lowest character
     li $t9, 57 # ASCII for hightest possible non-letter digit ascii
     li $s0, 65 # ASCII for lowest possible capital letter ascii
-    li $s1, 88 # ASCII for highest possible capital letter ascii # = X since N = 34
+    li $s1, 88 # ASCII for highest possible capital letter ASCII # = X since N = 34
     li $s2, 97 # ASCII for lowest possible common letter ascii
-    li $s3, 120 # ASCII for highest possible common letter ascii = x since N = 34
+    li $s3, 120 # ASCII for highest possible common letter ASCII = x since N = 34
     add $s5, $a0, $zero
     j loop
 
@@ -106,9 +106,9 @@ notSpace:
     syscall # tell the system to end the program
     
 notDigit:
-    blt $s4, $s0, invalidStatement # breaks if ascii of character is < 65
-    bgt $s4, $s1, notCapital # breaks if ascii of character is > 88
-    addi $s4, $s4, -55 # makes the ascii for digit align with capital letters
+    blt $s4, $s0, invalidStatement # breaks if ASCII of character is < 65
+    bgt $s4, $s1, notCapital # breaks if ASCII of character is > 88
+    addi $s4, $s4, -55 # makes the ASCII for digit align with capital letters
     sb $s4, 0($s5) # stores the character in a new string
     addi $s5, $s5, 1 # increments the address of the new array
     addi $t3, $t3, 1 # increments the address of the input string
