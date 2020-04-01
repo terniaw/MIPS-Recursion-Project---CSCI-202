@@ -62,3 +62,33 @@ loop:
     beq $s4, $t4, trailingChar # character is equal to space
     beq $s4, $t5, trailingChar # character is equal to tab
     beq $s4, $t2, valid # newline comes before a invalid character is entered
+
+check:
+    blt $s4, $t8, invalidStatement # breaks if ACSII is less than 48
+    bgt $s4, $t9, notDigit # breaks if ASCII is more than 57
+    addi $s4, $s4, -48 # ASCII digit align with digits
+    sb $s4, 0($s5) # stores the character in a new string
+    addi $s5, $s5, 1 # adds to address of the new array
+    addi $t3, $t3, 1 # adds to address of the input string
+    addi $t6, $t6, 1 # increments the amount of valid characters
+    addi $s6, $s6, 1 # increments max number of characters
+    j loop
+    
+leadChar:
+    beq $s4, $t4, tabOrSpace # if leading charater is a space
+    beq $s4, $t5, tabOrSpace # if leading character is a tab
+    j check # check if is valid, not a tab or space
+
+tabOrSpace: # skips character and goes to the next one
+    addi $t3, $t3, 1 # adds to address of the input string
+    addi $s6, $s6, 1 # adds to max number of characters
+    j loop
+
+trailingChar:  #fucntion for checking if the rest of the code is all trailing tabs or spaces
+    addi $t3, $t3, 1 #move to the next byte
+    addi $s6, $s6, 1 # increments max number of characters
+    lb $s4, 0($t3)  #gets a character of the string
+    bgt $s6,$t0, invalidStatement #if max number of characters is greater than 100
+    beq $s4, $t2, valid #branches if only trailing tabs are spaces are found before newline
+    bne $s4, $s4, notSpace #branches if character is not a space
+    j trailingChar #returns to check next character for trailing tab or space
