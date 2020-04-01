@@ -87,14 +87,14 @@ tabOrSpace: # skips character and goes to the next one
 trailingChar:  #fucntion for checking if the rest of the code is all trailing tabs or spaces
     addi $t3, $t3, 1 #moves to next byte
     addi $s6, $s6, 1 # increments max number of characters
-    lb $s4, 0($t3)  # gets a character of the string
+    lb $s4, 0($t3)  # gets character of the string
     bgt $s6,$t0, invalidStatement # if max number of characters is greater than 100
-    beq $s4, $t2, valid # branches if only trailing tabs are spaces are found before newline
-    bne $s4, $s4, notSpace # branches if character is not a space
+    beq $s4, $t2, valid # if only trailing tabs are spaces are found before newline
+    bne $s4, $s4, notSpace # if character is not a space
     j trailingChar # returns to check next character for trailing tab or space
 
 notSpace:
-    bne $s4, $t5, invalidStatement # if character after space for trailing is not a tab or space then print invalid
+    bne $s4, $t5, invalidStatement # character after space for trailing is not a tab or space then print invalid
     j trailingChar #returns to check the next character for trailing tab or space
 
     invalidStatement: # prints invalid input and exists file
