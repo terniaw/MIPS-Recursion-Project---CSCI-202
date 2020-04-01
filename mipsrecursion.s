@@ -99,7 +99,7 @@ notSpace:
 
     invalidStatement: # prints invalid input and exists file
     li $v0, 4
-    la $a0, invalidMessage # prints "Invalid Input"
+    la $a0, invalidMessage # prints out "Invalid Input" to use
     syscall
     
     li $v0, 10
