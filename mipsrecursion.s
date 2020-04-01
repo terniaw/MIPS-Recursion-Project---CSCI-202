@@ -87,8 +87,32 @@ tabOrSpace: # skips character and goes to the next one
 trailingChar:  #fucntion for checking if the rest of the code is all trailing tabs or spaces
     addi $t3, $t3, 1 #moves to next byte
     addi $s6, $s6, 1 # increments max number of characters
-    lb $s4, 0($t3)  #gets a character of the string
-    bgt $s6,$t0, invalidStatement #if max number of characters is greater than 100
-    beq $s4, $t2, valid #branches if only trailing tabs are spaces are found before newline
-    bne $s4, $s4, notSpace #branches if character is not a space
-    j trailingChar #returns to check next character for trailing tab or space
+    lb $s4, 0($t3)  # gets a character of the string
+    bgt $s6,$t0, invalidStatement # if max number of characters is greater than 100
+    beq $s4, $t2, valid # branches if only trailing tabs are spaces are found before newline
+    bne $s4, $s4, notSpace # branches if character is not a space
+    j trailingChar # returns to check next character for trailing tab or space
+
+notSpace:
+    bne $s4, $t5, invalidStatement # if character after space for trailing is not a tab or space then print invalid
+    j trailingChar #returns to check the next character for trailing tab or space
+
+    invalidStatement: # prints invalid input and exists file
+    li $v0, 4
+    la $a0, invalidMessage # prints "Invalid Input"
+    syscall
+    
+    li $v0, 10
+    syscall # tell the system to end the program
+    
+notDigit:
+    blt $s4, $s0, invalidStatement # breaks if ascii of character is < 65
+    bgt $s4, $s1, notCapital # breaks if ascii of character is > 88
+    addi $s4, $s4, -55 # makes the ascii for digit align with capital letters
+    sb $s4, 0($s5) # stores the character in a new string
+    addi $s5, $s5, 1 # increments the address of the new array
+    addi $t3, $t3, 1 # increments the address of the input string
+    addi $t6, $t6, 1 # increments the amount of valid characters
+    addi $s6, $s6, 1 # increments max number of characters
+    j loop
+
