@@ -2,153 +2,149 @@
 # 02894922 % 11 = 8
 # 8 + 26 = Base 34
 
-.data  # data section
-    myMessage: .asciiz "Please enter a string of up to 100 characters: \n"
-    myArray: .space 101 # this creates space for the users input
+.data  # data declaration section
+    myMessage: .asciiz "Please enter a string of up to 100 characters: "
+    myArray: .space 101 # creating space for the users input
     invalidMessage: .asciiz "Invalid input\n"
-    array: .word 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 # space for an array of 20 elements
+    array: .word 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 # creates an array of 20 elements
+
 
 .text
 main:
 
-    li $v0, 4 # prints out string
-    la $a0, myMessage
-    syscall
-
-    li $v0, 8 # accepts user input
+    li $v0, 8 #accepts user input
     la $a0, myArray
-    li $a1, 100 # specifies the length that the user can input
+    li $a1, 100 #specify the length the user can input
     syscall
-
-    lw $t0, myArray # load instruction that takes the word in $t0
-    sub $sp, $sp, 12 # moves pointer for stack
+    
+    lw $t0, myArray # loads the word in $t0
+    sub $sp, $sp, 12 # moves the pointer for stack
     sw $t0, 4($sp) # adds the input string to the stack
-    la $a0, array # load instruction into the array
+    la $a0, array # loads the array
     la $a1, myArray
-
-    jal validString # determines if the string is valid by jumping to subprogram
+    
+    jal validString # jumps to subprogram A
     add $t1, $v0, $zero
     li $v0, 1
     move $a0, $t1
-    syscall # prints the equivalent result of the decimal base number 34
+    syscall # prints the result of the decimal equivalent to the base 35 number
     li $v0, 10
-    syscall
-
+    syscall # tell the system to end the program
+    
 validString:
     sw $ra, 0($sp)
     li $t1, 20
     li $t2, 10
-    add $t3, $a1, $zero # loads from myArray
+    add $t3, $a1, $zero
     li $t4, 32
-    li $t0, 100 # sets the max amount of characters
-    li $s6, 0 # counter that determines if the max amount of characters was reached
-    li $t5, 9 # ASCII for tab
-    li $t6, 0 # valid character counter
+    li $t0, 100 #Max amount of characters
+    li $s6, 0 #counter to determine if max characters have been reached
+    li $t5, 9 #Tab ASCII code
+    li $t6, 0 #counter for valid characters
     li $t7, 0
-    li $t8, 48 # ASCII for lowest character
-    li $t9, 57 # ASCII for hightest possible non-letter digit ascii
-    li $s0, 65 # ASCII for lowest possible capital letter ascii
-    li $s1, 88 # ASCII for highest possible capital letter ASCII # = X since N = 34
-    li $s2, 97 # ASCII for lowest possible common letter ascii
-    li $s3, 120 # ASCII for highest possible common letter ASCII = x since N = 34
+    li $t8, 48 #Lowest character
+    li $t9, 57 #Highest possible no.
+    li $s0, 65 #Lowest capital letter
+    li $s1, 88 #Highest possible capital letter (X)
+    li $s2, 97 #Lowest possible lowercase letter
+    li $s3, 120 #Highest possible lowercase letter (x)
     add $s5, $a0, $zero
     j loop
-
+    
 loop:
-    bgt $s6,$t0, invalidStatement # max number of characters is greater than 100
-    bgt $t6,$t1, invalidStatement # number of valid characters is greater than 20
-    lb $s4, 0($t3) # gets a character of the string
-    beq $t6, $t7, leadChar # character could be considered leading
-    beq $s4, $t4, trailingChar # character is equal to space
-    beq $s4, $t5, trailingChar # character is equal to tab
-    beq $s4, $t2, valid # newline comes before a invalid character is entered
+    bgt $s6,$t0, invalidStatement #If no. of chars > 100
+    bgt $t6,$t1, invalidStatement #If no. of chars > 100
+    lb $s4, 0($t3)
+    beq $t6, $t7, leadChar
+    beq $s4, $t4, trailingChar
+    beq $s4, $t5, trailingChar
+    beq $s4, $t2, valid
 
 check:
-    blt $s4, $t8, invalidStatement # breaks if ACSII is less than 48
-    bgt $s4, $t9, notDigit # breaks if ASCII is more than 57
-    addi $s4, $s4, -48 # ASCII digit align with digits
-    sb $s4, 0($s5) # stores the character in a new string
-    addi $s5, $s5, 1 # adds to address of the new array
-    addi $t3, $t3, 1 # adds to address of the input string
-    addi $t6, $t6, 1 # increments the amount of valid characters
-    addi $s6, $s6, 1 # increments max number of characters
+    blt $s4, $t8, invalidStatement #If ASCII char is < 48
+    bgt $s4, $t9, notDigit #If ASCII char > 57
+    addi $s4, $s4, -48
+    sb $s4, 0($s5)
+    addi $s5, $s5, 1 #Increments the address of array
+    addi $t3, $t3, 1
+    addi $t6, $t6, 1
+    addi $s6, $s6, 1
+    j loop
+        
+leadChar: #Checks to see if the leading character is a tab or a space
+    beq $s4, $t4, tabOrSpace
+    beq $s4, $t5, tabOrSpace
+    j check
+
+tabOrSpace: #Skips character
+    addi $t3, $t3, 1
+    addi $s6, $s6, 1
     j loop
     
-leadChar:
-    beq $s4, $t4, tabOrSpace # if leading charater is a space
-    beq $s4, $t5, tabOrSpace # if leading character is a tab
-    j check # check if is valid, not a tab or space
-
-tabOrSpace: # skips character and goes to the next one
-    addi $t3, $t3, 1 # adds to address of the input string
-    addi $s6, $s6, 1 # adds to max number of characters
-    j loop
-
-trailingChar:  #fucntion for checking if the rest of the code is all trailing tabs or spaces
-    addi $t3, $t3, 1 #moves to next byte
-    addi $s6, $s6, 1 # increments max number of characters
-    lb $s4, 0($t3)  # gets character of the string
-    bgt $s6,$t0, invalidStatement # if max number of characters is greater than 100
-    beq $s4, $t2, valid # if only trailing tabs are spaces are found before newline
-    bne $s4, $s4, notSpace # if character is not a space
-    j trailingChar # returns to check next character for trailing tab or space
+trailingChar: #Checks to see if the trailing characters are tabs or spaces and removes them
+    addi $t3, $t3, 1
+    addi $s6, $s6, 1
+    lb $s4, 0($t3)  #Gets the element
+    bgt $s6,$t0, invalidStatement #Moves to invalidStatement if the no. of char > 100
+    beq $s4, $t2, valid
+    bne $s4, $s4, notSpace
+    j trailingChar
 
 notSpace:
-    bne $s4, $t5, invalidStatement # character after space for trailing is not a tab or space then print invalid
+    bne $s4, $t5, invalidStatement #if character after space for trailing is not a tab or space then print invalid
     j trailingChar #returns to check the next character for trailing tab or space
 
-    invalidStatement: # prints invalid input and exists file
+invalidStatement: #Prints invalid input
     li $v0, 4
-    la $a0, invalidMessage # prints out "Invalid Input" to use
+    la $a0, invalidMessage #prints "Invalid Input"
     syscall
     
     li $v0, 10
-    syscall # tell the system to end the program
+    syscall #Ends the program
     
-notDigit:
-    blt $s4, $s0, invalidStatement # breaks if ASCII of character is < 65
-    bgt $s4, $s1, notCapital # breaks if ASCII of character is > 88
-    addi $s4, $s4, -55 # makes the ASCII for digit align with capital letters
-    sb $s4, 0($s5) # stores the character in a new string
-    addi $s5, $s5, 1 # increments the address of the new array
-    addi $t3, $t3, 1 # increments the address of the input string
-    addi $t6, $t6, 1 # increments the amount of valid characters
-    addi $s6, $s6, 1 # increments max number of characters
+    notDigit:
+    blt $s4, $s0, invalidStatement
+    bgt $s4, $s1, notCapital
+    addi $s4, $s4, -55
+    sb $s4, 0($s5)
+    addi $s5, $s5, 1
+    addi $t3, $t3, 1
+    addi $t6, $t6, 1
+    addi $s6, $s6, 1
     j loop
-
-notCapital:
-    blt $s4, $s2, invalidStatement # breaks if ASCII of character is < 97
-    bgt $s4, $s3, invalidStatement # breaks if ASCII of character is > 121
-    addi $s4, $s4, -87 # makes the ASCII for digit align with common letters
-    sb $s4, 0($s5) # stores the character in a new string
-    addi $s5, $s5, 1 # increments the address of the new array
-    addi $t3, $t3, 1 # increments the address of the input string
-    addi $t6, $t6, 1 # increments the amount of valid characters
-    addi $s6, $s6, 1 # increments max number of characters
+    
+    notCapital:
+    blt $s4, $s2, invalidStatement
+    bgt $s4, $s3, invalidStatement
+    addi $s4, $s4, -87
+    sb $s4, 0($s5)
+    addi $s5, $s5, 1
+    addi $t3, $t3, 1
+    addi $t6, $t6, 1
+    addi $s6, $s6, 1
     j loop
-
-valid:
-    sub $s5, $s5, $t6 # position address to first character
-    li $t0, 35 # loads the base number
-    li $t1, 100000 # the final recursive product sum lo
-    li $t5, 0 # the final recursive product sum hi
+    
+    valid:
+    sub $s5, $s5, $t6
+    li $t0, 34
+    li $t1, 100000
+    li $t5, 0
     add $t1, $zero, $zero
-    li $t2, 1 # set equal to 1
-
-recursion:
-    beq $t6, $t2, baseCase # branch if only one character is left
-    lb $t4, 0($s5) # loads the address of the last character
-    add $t1, $t1, $t4 # adds it to the total
-    mult $t1, $t0 # multiplies the result by the base number
+    li $t2, 1
+    
+    recursion:
+    beq $t6, $t2, baseCase
+    lb $t4, 0($s5)
+    add $t1, $t1, $t4
+    mult $t1, $t0
     mflo $t1
     addi $t6, $t6, -1
     addi $s5, $s5, 1
     j recursion
-
-baseCase:
-    lb $t4, 0($s5) # loads the address of the last character
-    add $t1, $t1, $t4 # adds to total
-
+    
+    baseCase:
+    lb $t4, 0($s5)
+    add $t1, $t1, $t4
+    
     add $v0, $zero, $t1
     jr $ra
-
