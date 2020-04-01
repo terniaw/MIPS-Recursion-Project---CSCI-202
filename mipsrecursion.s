@@ -33,3 +33,32 @@ main:
     syscall # prints the equivalent result of the decimal base number 34
     li $v0, 10
     syscall
+
+validString:
+    sw $ra, 0($sp)
+    li $t1, 20
+    li $t2, 10
+    add $t3, $a1, $zero # loads from myArray
+    li $t4, 32
+    li $t0, 100 # sets the max amount of characters
+    li $s6, 0 # counter that determines if the max amount of characters was reached
+    li $t5, 9 # ASCII for tab
+    li $t6, 0 # valid character counter
+    li $t7, 0
+    li $t8, 48 # ASCII for lowest character
+    li $t9, 57 # ASCII for hightest possible non-letter digit ascii
+    li $s0, 65 # ASCII for lowest possible capital letter ascii
+    li $s1, 88 # ASCII for highest possible capital letter ascii # = X since N = 34
+    li $s2, 97 # ASCII for lowest possible common letter ascii
+    li $s3, 120 # ASCII for highest possible common letter ascii = x since N = 34
+    add $s5, $a0, $zero
+    j loop
+
+loop:
+    bgt $s6,$t0, invalidStatement # max number of characters is greater than 100
+    bgt $t6,$t1, invalidStatement # number of valid characters is greater than 20
+    lb $s4, 0($t3) # gets a character of the string
+    beq $t6, $t7, leadChar # character could be considered leading
+    beq $s4, $t4, trailingChar # character is equal to space
+    beq $s4, $t5, trailingChar # character is equal to tab
+    beq $s4, $t2, valid # newline comes before a invalid character is entered
